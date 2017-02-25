@@ -62,6 +62,5 @@ int main(int argc, char** argv)
             }
         }
     }
-    join_all(threads);
     return EXIT_SUCCESS;
 }
