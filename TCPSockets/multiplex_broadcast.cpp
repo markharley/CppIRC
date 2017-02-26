@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <algorithm>
 #include <cstdlib>
 #include "TCPAcceptor.h"
 
@@ -13,13 +14,20 @@ void serve(TCPStream* stream)
 {
 	ssize_t len;
 	char line[256];
-	while ((len = stream->receive(line, sizeof(line))) > 0) {
+	while ( (len = stream->receive(line, sizeof(line))) > 0 ) {
 		line[len] = 0;
 		cout << "received - " << line << "\n" << endl;
 		for (auto iter = channel.begin(), end = channel.end(); iter != end; ++iter) {
-			(*iter)->send(line, len);
+			bool close_conn = false;
+			if ( (*iter)->send(line, len) < 0) {
+				if (stream == *iter) close_conn = true;
+				iter = channel.erase(iter);
+				if (close_conn) return;
+			}
 		}
 	}
+	channel.erase(std::remove(channel.begin(), channel.end(), stream),
+	              channel.end());
 }
 
 void do_join(thread& t)
@@ -64,3 +72,7 @@ int main(int argc, char** argv)
 	}
 	return EXIT_SUCCESS;
 }
+
+
+// TODO: remove dead threads
+// TODO: not sure if the send side close_conn is necessary
