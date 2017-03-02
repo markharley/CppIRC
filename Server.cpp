@@ -1,7 +1,7 @@
 #include "Server.h"
 
 
-void serve(User& user)
+void Server::serve(User& user)
 {
 	ssize_t len;
 	char line[256];
@@ -9,10 +9,10 @@ void serve(User& user)
 	while ( (len = user->receive(line, sizeof(line))) > 0 ) {
 		line[len] = 0;
 		cout << "received - " << line << "\n" << endl;
-		string new_piece(line);
-		command += new_piece;
+		string newPiece(line);
+		command += newPiece;
 
-		if (new_piece.back() == '\n') {
+		if (newPiece.back() == '\n') {
 			// Parser.parse_command(command, user);
 			cout << "command - " << command << endl;
 			command = "";
