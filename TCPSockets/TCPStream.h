@@ -31,9 +31,9 @@ public:
 
 
 protected:
-	int m_sd;
-	string m_peerIP;
-	int m_peerPort;
+	int sd;
+	string peerIP;
+	int peerPort;
 
 
 private:

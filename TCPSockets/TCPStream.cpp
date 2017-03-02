@@ -1,8 +1,8 @@
 #include <arpa/inet.h>
 #include "TCPStream.h"
 
-TCPStream::TCPStream(int sd, struct sockaddr_in* address)
-	: m_sd(sd)
+TCPStream::TCPStream(int _sd, struct sockaddr_in* address)
+	: sd(_sd)
 {
 	char ip[50];
 	inet_ntop(PF_INET,
@@ -11,44 +11,44 @@ TCPStream::TCPStream(int sd, struct sockaddr_in* address)
 			  sizeof(ip)-1
 			 );
 
-	m_peerIP = ip;
-	m_peerPort = ntohs(address->sin_port);
+	peerIP = ip;
+	peerPort = ntohs(address->sin_port);
 }
 
 TCPStream::~TCPStream()
 {
-	close(m_sd);
+	close(sd);
 }
 
 ssize_t TCPStream::send(const char* buffer, size_t len)
 {
-	return write(m_sd, buffer, len);
+	return write(sd, buffer, len);
 }
 
 ssize_t TCPStream::send(const string& buffer, size_t len)
 {
-	return write(m_sd, buffer.c_str(), len);
+	return write(sd, buffer.c_str(), len);
 }
 
 ssize_t TCPStream::receive(char* buffer, size_t len, int timeout)
 {
-	if (timeout <= 0) return read(m_sd, buffer, len);
+	if (timeout <= 0) return read(sd, buffer, len);
 
 	if(waitForReadEvent(timeout) == true)
 	{
-		return read(m_sd, buffer, len);
+		return read(sd, buffer, len);
 	}
 	return connectionTimedOut;
 }
 
 string TCPStream::getPeerIP()
 {
-	return m_peerIP;
+	return peerIP;
 }
 
 int TCPStream::getPeerPort()
 {
-	return m_peerPort;
+	return peerPort;
 }
 
 bool TCPStream::waitForReadEvent(int timeout)
@@ -59,8 +59,8 @@ bool TCPStream::waitForReadEvent(int timeout)
 	tv.tv_sec = timeout;
 	tv.tv_usec = 0;
 	FD_ZERO(&sdset);
-	FD_SET(m_sd, &sdset);
-	if (select(m_sd+1, &sdset, NULL, NULL, &tv) > 0)
+	FD_SET(sd, &sdset);
+	if (select(sd+1, &sdset, NULL, NULL, &tv) > 0)
 	{
 		return true;
 	}
