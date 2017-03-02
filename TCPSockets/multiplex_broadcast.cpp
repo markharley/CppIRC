@@ -10,15 +10,47 @@ using namespace std;
 vector<thread> threads;
 vector<TCPStream*> channel;
 
+// void serve(TCPStream* stream)
+// {
+// 	ssize_t len;
+// 	char line[256];
+// 	while ( (len = stream->receive(line, sizeof(line))) > 0 ) {
+// 		line[len] = 0;
+// 		cout << "received - " << line << "\n" << endl;
+// 		for (auto iter = channel.begin(), end = channel.end(); iter != end; ++iter) {
+// 			bool close_conn = false;
+// 			cout << "sending - " << line << "\n" << endl;
+// 			if ( (*iter)->send(line, len) < 0) {
+// 				if (stream == *iter) close_conn = true;
+// 				iter = channel.erase(iter);
+// 				if (close_conn) return;
+// 			}
+// 		}
+// 	}
+// 	channel.erase(std::remove(channel.begin(), channel.end(), stream),
+// 	              channel.end());
+// }
+
 void serve(TCPStream* stream)
 {
 	ssize_t len;
 	char line[256];
+	string incoming = "";
 	while ( (len = stream->receive(line, sizeof(line))) > 0 ) {
 		line[len] = 0;
 		cout << "received - " << line << "\n" << endl;
+		string new_piece(line);
+		incoming = incoming + new_piece;
+
+		if (new_piece.back() == '\n') {
+			// parse_command(incoming, user);
+			cout << "command - " << incoming << endl;
+			incoming = "";
+		}
+
 		for (auto iter = channel.begin(), end = channel.end(); iter != end; ++iter) {
 			bool close_conn = false;
+			cout << "sending - " << line << "\n" << endl;
 			if ( (*iter)->send(line, len) < 0) {
 				if (stream == *iter) close_conn = true;
 				iter = channel.erase(iter);
@@ -70,9 +102,11 @@ int main(int argc, char** argv)
 			}
 		}
 	}
+	delete acceptor;
 	return EXIT_SUCCESS;
 }
 
 
 // TODO: remove dead threads
-// TODO: not sure if the send side close_conn is necessary
+// TODO: not sure if the send side close_conn is necessary?
+// TODO: Look at where we should be storing Users instead of TCPStreams
