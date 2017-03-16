@@ -13,7 +13,7 @@ void Server::serve(User& user)
 		command += newPiece;
 
 		if (newPiece.back() == '\n') {
-			// Parser.parse_command(command, user);
+			commandHandler.handle_command(command, *this, user);
 			cout << "command - " << command << endl;
 			command = "";
 		}

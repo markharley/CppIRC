@@ -19,8 +19,8 @@ private:
 	User();
 
 	vector<Channel*> channels;
-	string nick;
 	TCPStream& stream;
 
-
+	// Nickname. Max length of 9 according to RFC2812
+	string nick;
 };

@@ -1,0 +1,26 @@
+#Commands
+
+Could write a custom hashmap here since the number of commands is fixed at compile time. Basically an enum of the command names used as indexes for an array. O(1) lookup without having to worry about hash functions.
+
+## Class per command (extends Command ABC)
+Stored in CommandHandler::commands: std::unordered_map<string, Command&>
+
+Advantages:
+- Reflects static nature of commands (no runtime mutability)
+- 
+
+Disadvantages:
+- Many tiny classes, no data(?), no member methods
+- Needs to be initialized in CommandHandler
+
+
+## Module of command functions
+Stored in CommandHandler::commands: std::unordered_map<string, fnPtr>
+
+Advantages:
+- Simplicity of definition
+- No initialization step
+
+Disadvantages:
+- Unnecessary mutability
+- Ugly module, or many tiny modules

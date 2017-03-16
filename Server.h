@@ -1,11 +1,11 @@
 #pragma once
 
 #include <vector>
-#include <algorithm>
 #include <cstdlib>
 #include <string>
 #include <exception>
 #include "Channel.h"
+#include "CommandHandler.h"
 
 using namespace std;
 
@@ -24,7 +24,10 @@ struct ChannelDoesntExistError : public runtime_error {
 class Server
 {
 public:
-	Server();
+	Server()
+	{
+		commandHandler = CommandHandler();
+	}
 	~Server();
 
 	void add_connection(TCPStream* stream);
@@ -37,6 +40,7 @@ public:
 protected:
 	vector<thread> threads;
 	unordered_map<string, Channel> channels;
+	CommandHandler& commandHandler;
 
 private:
 	void do_join(thread& t);
